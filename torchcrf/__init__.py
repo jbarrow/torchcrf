@@ -162,8 +162,11 @@ class CRF(nn.Module):
             seq_length = mask_.long().sum()
             best_tags.append(self._viterbi_decode(emission[:seq_length]))
 
-        return torch.tensor(best_tags)
-        # return best_tags
+        if mask is None:
+            return torch.tensor(best_tags)
+        # if we have a mask, then the list of lists won't be a consistent size
+        # and PyTorch will throw an error
+        return best_tags
 
     def _compute_joint_llh(self,
                            emissions: Tensor,
